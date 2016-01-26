@@ -1,4 +1,5 @@
 //$.ajax("https://api.parse.com/1/classes/chatterbox)");
+
 var app = {
   server: "https://api.parse.com/1/classes/chatterbox"
 };
@@ -36,6 +37,28 @@ app.fetch = function(message){
     }
   });
 };
+
+app.clearMessages = function(){
+  $('#chats').empty();
+};
+
+app.addMessage = function(message){
+  $('#chats').append('<div class = "message"></div>');
+
+  $('.message').html('<div class = "messageText">' + message.text + '</div>');
+  $('.messageText').append('<div class = "user">' + message.username + '</div>');
+};
+
+app.addRoom = function(roomName){
+  $('#roomSelect').append("<div>" + roomName + "</div>");
+};
+
+app.addFriend = function(){
+  
+
+};
+
+app.handleSubmit = function(){};
 
 var message = {
   username: 'shawndrost',
