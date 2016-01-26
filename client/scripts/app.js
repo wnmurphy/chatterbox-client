@@ -5,6 +5,7 @@ var app = {
   friends: [],
   currentUser: 'anonymous',
   messages: [],
+  allRooms: [],
   currentRoom: 'default'
 };
 
@@ -14,8 +15,11 @@ app.escape = function (str) {
     return div.innerHTML;
 };
 
-// Initialize event listeners
+// Initialize event listeners and get messages from server.
 app.init = function(){
+
+  // Get messages from server;
+  app.fetch();
 
   // Listen for click on a username to add friend
   $('.username').off();
@@ -42,8 +46,9 @@ app.init = function(){
   // Listen for room change
   $('#roomSelect').off();
   $('#roomSelect').change(function(e){
-    //e.preventDefault();
+    e.preventDefault();
     app.currentRoom = $('#roomSelect').val();
+    app.clearMessages();
     app.displayMessages();
   }); 
    
@@ -87,6 +92,7 @@ app.fetch = function(){
         data.results[i].roomname = app.escape(data.results[i].roomname);
         app.messages.push(data.results[i]);
       }
+      app.displayMessages();
     },
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -101,13 +107,24 @@ app.clearMessages = function(){
 };
 
 app.displayMessages = function(){
-  //  loop through all local messages for currently-selected room
+  // get all room names and add them to drop-down as <option>s
+
+
+  app.allRooms = [];
+  $('#roomSelect').empty();
   for (var i = 0; i < app.messages.length; i++){
-    //if the current message is in the selected room
+    app.allRooms.push(app.messages[i].roomname);
+    
+    //  loop through all local messages for currently-selected room 
     if (app.messages[i].roomname === app.currentRoom){
       //display message in DOM
       app.addMessage(app.messages[i]);
     }
+  }
+  // Remove duplicate rooms
+  app.allRooms = _.uniq(app.allRooms);
+  for (var j = 0; j < app.allRooms.length; j++){
+    app.addRoom(app.allRooms[j]);
   }
 };
 
@@ -120,7 +137,7 @@ app.addMessage = function(message){
 
 // Add a user-inputted room to the drop-down
 app.addRoom = function(roomName){
-  $('#roomSelect').append('<option>' + roomName + '</option>');
+  $('#roomSelect').append('<option id="' + roomName + '">' + roomName + '</option>');
 };
 
 app.addFriend = function(friend){
@@ -145,25 +162,10 @@ app.handleSubmit = function(){
 $(document).ready(function(){
   app.init()
   // Write SetInterval to run app.init every x seconds to check for new messages
-  // run fetch on interval to:
-});;
+});
 
-
-// Display messages retrieved from the parse server.
-
-// Validate input for proper escaping
-  // write a validation function
-  // call on incoming data in handleSubmit
-  // call on outgoing data in handleSubmit
 
 // Allow users to send messages.
-
-// Allow users to enter existing rooms.
-  // Drop-down menu of room class
-  // room selection 
-    // clear messages
-    // sort global messages by room
-    // repopulate messages by room
 
 // Display all messages sent by friends in bold
   // apply 'friend' class on click
