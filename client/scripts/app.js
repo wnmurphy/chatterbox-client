@@ -1,10 +1,17 @@
 //$.ajax("https://api.parse.com/1/classes/chatterbox)");
 
 var app = {
-  server: "https://api.parse.com/1/classes/chatterbox"
+  server: "https://api.parse.com/1/classes/chatterbox",
+  friends: []
 };
 
-app.init = function(){};
+app.init = function(){
+  // if rebinding needed, rerun at that time
+  $('.username').on('click', function(){
+    var friend = $(this).text();
+    app.addFriend(friend);
+  })
+};
 
 app.send = function(message){
   $.ajax({
@@ -46,16 +53,15 @@ app.addMessage = function(message){
   $('#chats').append('<div class = "message"></div>');
 
   $('.message').html('<div class = "messageText">' + message.text + '</div>');
-  $('.messageText').append('<div class = "user">' + message.username + '</div>');
+  $('.messageText').append('<div class = "username">' + message.username + '</div>');
 };
 
 app.addRoom = function(roomName){
   $('#roomSelect').append("<div>" + roomName + "</div>");
 };
 
-app.addFriend = function(){
-  
-
+app.addFriend = function(friend){
+  this.friends.push(friend);
 };
 
 app.handleSubmit = function(){};
