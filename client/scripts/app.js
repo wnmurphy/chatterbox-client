@@ -3,7 +3,8 @@
 var app = {
   server: "https://api.parse.com/1/classes/chatterbox",
   friends: [],
-  currentUser: 'anonymous'
+  currentUser: 'anonymous',
+  messages: []
 };
 
 app.escape = function (str) {
@@ -41,17 +42,28 @@ app.send = function(message){
   });
 };
 
+// var sampleMessage = {
+//     objectId: "sOdhpd1u9z",
+//     createdAt: "2015-09-01T17:41:00.580Z",
+//     updatedAt: "2015-09-01T17:41:00.580Z",
+//     roomname: safeRoomName,
+//     username: safeUserName,
+//     text: safeText
+//   };
+
 app.fetch = function(){
   $.ajax({
     url: 'https://api.parse.com/1/classes/chatterbox',
     type: 'GET',
     contentType: 'application/json',
     success: function (data) {
-      // receive results message.results
-      // iterate through array
-        // message.results[i] = escaped(message.results[i]);
-        // app.addMessage(message.results[i]);
-      return JSON.parse(data);
+      var safeMessage;
+      for(var i = 0; i < data.results.length; i++){
+        data.results[i].username = app.escape(data.results[i].username);
+        data.results[i].text = app.escape(data.results[i].text);
+        data.results[i].roomname = app.escape(data.results[i].roomname);
+        app.messages.push(data.results[i]);
+      }
     },
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -65,62 +77,66 @@ app.clearMessages = function(){
   $('#chats').empty();
 };
 
-app.addMessage = function(message){
-  $('#chats').append('<div class = "message"></div>');
-  $('.message').html('<div class = "messageText">' + message.text + '</div>');
-  $('.messageText').append('<div class = "username">' + message.username + '</div>');
+
+// Add messages for selected room to DOM
+app.addMessage = function(roomName){
+  // sort messages array based on selected roomName
+  // loop through messages
+    // if current room name matches message room name, 
+    // app.addMessage to add to DOM 
+
+  $('#chats').append('<div class = "message" id="' + message.objectId + '"></div>');
+  $('#' + message.objectId).html('<div class = "messageText">' + message.text + '</div>');
+  $('#' + message.objectId).append('<div class = "username">' + message.username + '</div>');
 };
 
 app.addRoom = function(roomName){
-  $('#roomSelect').append("<div>" + roomName + "</div>");
+  $('#roomSelect').append('<div>' + roomName + '</div>');
 };
 
 app.addFriend = function(friend){
   this.friends.push(friend);
 };
 
-
 app.handleSubmit = function(){
   var currentText = $('#send #message').val();
   var currentRoomname = $('#roomSelect').first().text();
-  //console.log(currentRoomname, currentText);
-  //call our escape validator
-  // if (validated){...}
+  var safeText = app.escape(currentText);
+  var safeRoomName = app.escape(currentRoomname);
+  var safeUserName = app.escape(app.currentUser);
+
   var submit = {
-    username: app.currentUser,
-    text: currentText,
-    roomname: currentRoomname
+    username: safeUserName,
+    text: safeText,
+    roomname: safeRoomName
   };
-  // console.log(submit);
   app.send(submit);
 };
 
-// Get last test to pass in spec
-
-  // Copy structure of spec HTML to get basic elements
-
-  // Display messages retrieved from the parse server.
-
+$(document).ready(function(){
+  app.init()
   // Write SetInterval to run app.init every x seconds to check for new messages
+  // run fetch on interval to:
+});;
 
-  // Validate input for proper escaping
-    // write a validation function
-    // call on incoming data in handleSubmit
-    // call on outgoing data in handleSubmit
 
-  // Allow users to select a username.
-    //input field
+// Display messages retrieved from the parse server.
 
-  // Allow users to send messages.
+// Validate input for proper escaping
+  // write a validation function
+  // call on incoming data in handleSubmit
+  // call on outgoing data in handleSubmit
 
-  // Allow users to enter existing rooms.
-    // Drop-down menu of room class
-    // room selection 
-      // clear messages
-      // sort global messages by room
-      // repopulate messages by room
-  
-  // Display all messages sent by friends in bold
-    // apply 'friend' class on click
+// Allow users to send messages.
 
-  // Complete Backbone introduction repo.
+// Allow users to enter existing rooms.
+  // Drop-down menu of room class
+  // room selection 
+    // clear messages
+    // sort global messages by room
+    // repopulate messages by room
+
+// Display all messages sent by friends in bold
+  // apply 'friend' class on click
+
+// Complete Backbone introduction repo.
