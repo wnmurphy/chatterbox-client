@@ -2,7 +2,8 @@
 
 var app = {
   server: "https://api.parse.com/1/classes/chatterbox",
-  friends: []
+  friends: [],
+  currentUser: 'anonymous'
 };
 
 app.init = function(){
@@ -10,7 +11,10 @@ app.init = function(){
   $('.username').on('click', function(){
     var friend = $(this).text();
     app.addFriend(friend);
-  })
+  });
+  $('.submit').submit(function(){
+    app.handleSubmit();
+  });  
 };
 
 app.send = function(message){
@@ -36,6 +40,7 @@ app.fetch = function(message){
     data: JSON.stringify(message),
     contentType: 'application/json',
     success: function (data) {
+      //call our escape validator
       return JSON.parse(data);
     },
     error: function (data) {
@@ -51,7 +56,6 @@ app.clearMessages = function(){
 
 app.addMessage = function(message){
   $('#chats').append('<div class = "message"></div>');
-
   $('.message').html('<div class = "messageText">' + message.text + '</div>');
   $('.messageText').append('<div class = "username">' + message.username + '</div>');
 };
@@ -64,48 +68,48 @@ app.addFriend = function(friend){
   this.friends.push(friend);
 };
 
-app.handleSubmit = function(){};
 
-var message = {
-  username: 'shawndrost',
-  text: 'trololo',
-  roomname: '4chan'
+app.handleSubmit = function(){
+  var currentText = $('#send #message').val();
+  var currentRoomname = $('#roomSelect').first().text();
+  //console.log(currentRoomname, currentText);
+  //call our escape validator
+  // if (validated){...}
+  var submit = {
+    username: app.currentUser,
+    text: currentText,
+    roomname: currentRoomname
+  };
+  // console.log(submit);
+  app.send(submit);
 };
 
+// Get last test to pass in spec
 
+  // Copy structure of spec HTML to get basic elements
 
   // Display messages retrieved from the parse server.
 
-  // Setup a way to refresh the displayed messages (either automatically or with a button).
+  // Write SetInterval to run app.init every x seconds to check for new messages
 
-  // Use proper escaping on any user input.
+  // Validate input for proper escaping
+    // write a validation function
+    // call on incoming data in handleSubmit
+    // call on outgoing data in handleSubmit
 
   // Allow users to select a username.
+    //input field
 
   // Allow users to send messages.
-  
-  // Allow users to create rooms.
-    // Defined by the .room property of messages; you'll need to sort them.
+
   // Allow users to enter existing rooms.
+    // Drop-down menu of room class
+    // room selection 
+      // clear messages
+      // sort global messages by room
+      // repopulate messages by room
   
-  // Allow users to befriend other users by clicking on their username.
-  // Display all messages sent by friends in bold (probably apply 'friend' class on click).
+  // Display all messages sent by friends in bold
+    // apply 'friend' class on click
 
   // Complete Backbone introduction repo.
-
-// Specs:
-  // should parse correctly and have an object named `app`
-  // should have a method called init
-
-  // App behavior
-    // should submit a POST request via $.ajax
-    // should send the correct message along with the request
-    // should have a fetch method
-    // should submit a GET request via $.ajax
-    
-  // Chatroom behavior
-    // should be able to clear messages from the DOM
-    // should be able to add messages to the DOM
-    // should be able to add rooms to the DOM
-    // should add a friend upon clicking their username
-    // should try to send a message upon clicking submit
