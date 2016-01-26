@@ -6,6 +6,12 @@ var app = {
   currentUser: 'anonymous'
 };
 
+app.escape = function (str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+};
+
 app.init = function(){
   // if rebinding needed, rerun at that time
   $('.username').off();
@@ -35,14 +41,16 @@ app.send = function(message){
   });
 };
 
-app.fetch = function(message){
+app.fetch = function(){
   $.ajax({
     url: 'https://api.parse.com/1/classes/chatterbox',
     type: 'GET',
-    data: JSON.stringify(message),
     contentType: 'application/json',
     success: function (data) {
-      //call our escape validator
+      // receive results message.results
+      // iterate through array
+        // message.results[i] = escaped(message.results[i]);
+        // app.addMessage(message.results[i]);
       return JSON.parse(data);
     },
     error: function (data) {
@@ -51,6 +59,7 @@ app.fetch = function(message){
     }
   });
 };
+
 
 app.clearMessages = function(){
   $('#chats').empty();
