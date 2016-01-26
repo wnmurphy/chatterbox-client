@@ -8,10 +8,12 @@ var app = {
 
 app.init = function(){
   // if rebinding needed, rerun at that time
+  $('.username').off();
   $('.username').on('click', function(){
     var friend = $(this).text();
     app.addFriend(friend);
   });
+  $('.submit').off();
   $('.submit').submit(function(){
     app.handleSubmit();
   });  
