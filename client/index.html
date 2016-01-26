@@ -17,12 +17,17 @@
       <h1>chatterbox</h1>
       <!-- <div class="spinner"><img src="client/images/spiffygif_46x46.gif"></div> -->
       <div id="rooms">
-        Room:
-        <select id="roomSelect">
-        </select>
+        Room: 
+        <select id="roomSelect"></select>
+        <form action="#" id="newRoom">
+           <input type="text" name="addNewRoom" id="addNewRoom" placeholder="Add new room."/>
+           <input type="submit" name="submit" class="newRoomSubmit"/>
+        </form>
+       
+        
       </div>
       <form action="#" id="send" method="post">
-        <input type="text" name="message" id="message"/>
+        <input type="text" name="message" id="message" placeholder="Type your message!"/>
         <input type="submit" name="submit" class="submit"/>
       </form>
       <div id="chats"></div>

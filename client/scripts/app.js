@@ -20,10 +20,22 @@ app.init = function(){
     var friend = $(this).text();
     app.addFriend(friend);
   });
+
   $('.submit').off();
-  $('.submit').submit(function(){
+  $('.submit').submit(function(e){
+    e.preventDefault();
     app.handleSubmit();
-  });  
+  }); 
+
+  $('#newRoom').off();
+  $('#newRoom').submit(function(e){
+    e.preventDefault();
+    var addingRoom = $('#addNewRoom').val();
+    app.addRoom(addingRoom);
+  }); 
+
+  // event listener for user's new room submit
+    //on click, call addRoom 
 };
 
 app.send = function(message){
@@ -91,7 +103,7 @@ app.addMessage = function(roomName){
 };
 
 app.addRoom = function(roomName){
-  $('#roomSelect').append('<div>' + roomName + '</div>');
+  $('#roomSelect').append('<option>' + roomName + '</option>');
 };
 
 app.addFriend = function(friend){
