@@ -4,7 +4,8 @@ var app = {
   server: "https://api.parse.com/1/classes/chatterbox",
   friends: [],
   currentUser: 'anonymous',
-  messages: []
+  messages: [],
+  currentRoom: 'default'
 };
 
 app.escape = function (str) {
@@ -13,20 +14,24 @@ app.escape = function (str) {
     return div.innerHTML;
 };
 
+// Initialize event listeners
 app.init = function(){
-  // if rebinding needed, rerun at that time
+
+  // Listen for click on a username to add friend
   $('.username').off();
   $('.username').on('click', function(){
     var friend = $(this).text();
     app.addFriend(friend);
   });
 
+  // Listen for submission of message text
   $('.submit').off();
   $('.submit').submit(function(e){
     e.preventDefault();
     app.handleSubmit();
   }); 
 
+  // Listen for submission of new room
   $('#newRoom').off();
   $('#newRoom').submit(function(e){
     e.preventDefault();
@@ -34,8 +39,14 @@ app.init = function(){
     app.addRoom(addingRoom);
   }); 
 
-  // event listener for user's new room submit
-    //on click, call addRoom 
+  // Listen for room change
+  $('#roomSelect').off();
+  $('#roomSelect').change(function(e){
+    //e.preventDefault();
+    app.currentRoom = $('#roomSelect').val();
+    app.displayMessages();
+  }); 
+   
 };
 
 app.send = function(message){
@@ -84,24 +95,30 @@ app.fetch = function(){
   });
 };
 
-
+// Remove all messages from #chats div
 app.clearMessages = function(){
   $('#chats').empty();
 };
 
+app.displayMessages = function(){
+  //  loop through all local messages for currently-selected room
+  for (var i = 0; i < app.messages.length; i++){
+    //if the current message is in the selected room
+    if (app.messages[i].roomname === app.currentRoom){
+      //display message in DOM
+      app.addMessage(app.messages[i]);
+    }
+  }
+};
 
-// Add messages for selected room to DOM
-app.addMessage = function(roomName){
-  // sort messages array based on selected roomName
-  // loop through messages
-    // if current room name matches message room name, 
-    // app.addMessage to add to DOM 
-
+// Add a single message to the DOM
+app.addMessage = function(message){
   $('#chats').append('<div class = "message" id="' + message.objectId + '"></div>');
   $('#' + message.objectId).html('<div class = "messageText">' + message.text + '</div>');
   $('#' + message.objectId).append('<div class = "username">' + message.username + '</div>');
 };
 
+// Add a user-inputted room to the drop-down
 app.addRoom = function(roomName){
   $('#roomSelect').append('<option>' + roomName + '</option>');
 };
