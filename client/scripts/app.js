@@ -6,7 +6,7 @@ var app = {
   currentUser: 'anonymous',
   messages: [],
   allRooms: [],
-  currentRoom: 'default'
+  currentRoom: 'lobby'
 };
 
 
@@ -25,7 +25,8 @@ app.init = function(){
 
   // Listen for click on a username to add friend
   $('.username').off();
-  $('.username').on('click', function(){
+  $('#main').on('click', '.username', function(){
+    console.log('friend event listener');
     var friend = $(this).text();
     app.addFriend(friend);
   });
@@ -133,9 +134,6 @@ app.displayMessages = function(){
 app.addMessage = function(message){
   $('#chats').prepend('<div class = "message" id="' + message.objectId + '"></div>');
   $('#' + message.objectId).html('<div class = "messageText">' + message.text + '</div>');
-  if(app.friends.indexOf(message.username) > -1){
-    $('div.message').addClass('friend');
-  }
   $('#' + message.objectId).append('<div class = "username">' + '-' + message.username + '</div>');
 };
 
@@ -146,8 +144,18 @@ app.addRoom = function(roomName){
 };
 
 
-app.addFriend = function(friend){
+app.addFriend = function(friend, event){
   this.friends.push(friend);
+  // add friend class to the message if the username can be found in the friend array
+  if(app.friends.indexOf(friend) > -1){
+    $('div.message').addClass('friend'); //need to specify which one
+  }
+
+  // pass in event
+  // apply class to event.currentTarget
+  // get username of currentTarget
+    // could add data-username to div.username
+  // add to array
 };
 
 
@@ -178,10 +186,4 @@ $(document).ready(function(){
 //   In displayMessage, 
 //     if username is in app.friends array, then add class 'friend' to message text
 //     Add CSS to put message in bold
-
-// Left to do (worst-case time estimate):
-// 4. Add username, text, roomname to a message object and send message to server. (1 hour)
-
-// 5. Add friend: CSS so addFriend adds a friend class and displays messages from friends in bold. (1 hour)
-
 // 6. Finish Backbone intro (looks short). (20min)
