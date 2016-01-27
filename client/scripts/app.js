@@ -25,10 +25,11 @@ app.init = function(){
 
   // Listen for click on a username to add friend
   $('.username').off();
-  $('#main').on('click', '.username', function(){
-    console.log('friend event listener');
+  $('#chats').on('click', '.username', function(){
     var friend = $(this).text();
-    app.addFriend(friend);
+    var target = $(event.currentTarget);
+    console.log(event.currentTarget);
+    app.addFriend(friend, target);
   });
 
   // Listen for submission of message text
@@ -144,11 +145,11 @@ app.addRoom = function(roomName){
 };
 
 
-app.addFriend = function(friend, event){
+app.addFriend = function(friend, target){
   this.friends.push(friend);
   // add friend class to the message if the username can be found in the friend array
   if(app.friends.indexOf(friend) > -1){
-    $('div.message').addClass('friend'); //need to specify which one
+    $(target).addClass('friend'); 
   }
 
   // pass in event
@@ -178,12 +179,3 @@ $(document).ready(function(){
   app.init()
   setInterval(app.init, 10000);
 });
-
-// Allow users to 'befriend' other users by clicking on their username.
-//   On click
-//     Add the username to app.friends array.
-    
-//   In displayMessage, 
-//     if username is in app.friends array, then add class 'friend' to message text
-//     Add CSS to put message in bold
-// 6. Finish Backbone intro (looks short). (20min)
