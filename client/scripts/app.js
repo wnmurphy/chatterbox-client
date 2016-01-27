@@ -9,15 +9,17 @@ var app = {
   currentRoom: 'default'
 };
 
+
 app.escape = function (str) {
     var div = document.createElement('div');
     div.appendChild(document.createTextNode(str));
     return div.innerHTML;
 };
 
+
 // Initialize event listeners and get messages from server.
 app.init = function(){
-
+  app.currentUser = window.location.search.substr(10);
   // Get messages from server;
   app.fetch();
 
@@ -29,15 +31,15 @@ app.init = function(){
   });
 
   // Listen for submission of message text
-  $('.submit').off();
-  $('.submit').submit(function(e){
+  $('.messageSubmit').off();
+  $('.messageSubmit').on('click', function(e){
     e.preventDefault();
     app.handleSubmit();
   }); 
 
   // Listen for submission of new room
   $('#newRoom').off();
-  $('#newRoom').submit(function(e){
+  $('#newRoom').on('click', function(e){
     e.preventDefault();
     var addingRoom = $('#addNewRoom').val();
     app.addRoom(addingRoom);
@@ -47,12 +49,17 @@ app.init = function(){
   $('#roomSelect').off();
   $('#roomSelect').change(function(e){
     e.preventDefault();
+   
     app.currentRoom = $('#roomSelect').val();
+   
+    // set roomSelect.selection to currentRo
     app.clearMessages();
+   
     app.displayMessages();
   }); 
    
 };
+
 
 app.send = function(message){
   $.ajax({
@@ -61,6 +68,7 @@ app.send = function(message){
     data: JSON.stringify(message),
     contentType: 'application/json',
     success: function (data) {
+      console.log(message);
       console.log('chatterbox: Message sent. Data: ', data);
     },
     error: function (data) {
@@ -70,19 +78,12 @@ app.send = function(message){
   });
 };
 
-// var sampleMessage = {
-//     objectId: "sOdhpd1u9z",
-//     createdAt: "2015-09-01T17:41:00.580Z",
-//     updatedAt: "2015-09-01T17:41:00.580Z",
-//     roomname: safeRoomName,
-//     username: safeUserName,
-//     text: safeText
-//   };
 
 app.fetch = function(){
   $.ajax({
     url: 'https://api.parse.com/1/classes/chatterbox',
     type: 'GET',
+    data: {order: '-createdAt'},
     contentType: 'application/json',
     success: function (data) {
       var safeMessage;
@@ -101,19 +102,22 @@ app.fetch = function(){
   });
 };
 
+
 // Remove all messages from #chats div
 app.clearMessages = function(){
   $('#chats').empty();
 };
 
+
+// Get all new messages and update room list.
 app.displayMessages = function(){
   // get all room names and add them to drop-down as <option>s
-
-
-  app.allRooms = [];
-  $('#roomSelect').empty();
+  
   for (var i = 0; i < app.messages.length; i++){
-    app.allRooms.push(app.messages[i].roomname);
+    if (!(_.contains(app.allRooms, app.messages[i].roomname))){
+      app.allRooms.push(app.messages[i].roomname);
+      app.addRoom(app.messages[i].roomname);
+    }
     
     //  loop through all local messages for currently-selected room 
     if (app.messages[i].roomname === app.currentRoom){
@@ -121,34 +125,36 @@ app.displayMessages = function(){
       app.addMessage(app.messages[i]);
     }
   }
-  // Remove duplicate rooms
-  app.allRooms = _.uniq(app.allRooms);
-  for (var j = 0; j < app.allRooms.length; j++){
-    app.addRoom(app.allRooms[j]);
-  }
+  $('#roomSelect').val(app.currentRoom);
 };
+
 
 // Add a single message to the DOM
 app.addMessage = function(message){
-  $('#chats').append('<div class = "message" id="' + message.objectId + '"></div>');
+  $('#chats').prepend('<div class = "message" id="' + message.objectId + '"></div>');
   $('#' + message.objectId).html('<div class = "messageText">' + message.text + '</div>');
-  $('#' + message.objectId).append('<div class = "username">' + message.username + '</div>');
+  if(app.friends.indexOf(message.username) > -1){
+    $('div.message').addClass('friend');
+  }
+  $('#' + message.objectId).append('<div class = "username">' + '-' + message.username + '</div>');
 };
+
 
 // Add a user-inputted room to the drop-down
 app.addRoom = function(roomName){
   $('#roomSelect').append('<option id="' + roomName + '">' + roomName + '</option>');
 };
 
+
 app.addFriend = function(friend){
   this.friends.push(friend);
 };
 
+
 app.handleSubmit = function(){
-  var currentText = $('#send #message').val();
-  var currentRoomname = $('#roomSelect').first().text();
+  var currentText = $('#message').val();
   var safeText = app.escape(currentText);
-  var safeRoomName = app.escape(currentRoomname);
+  var safeRoomName = app.escape(app.currentRoom);
   var safeUserName = app.escape(app.currentUser);
 
   var submit = {
@@ -159,15 +165,23 @@ app.handleSubmit = function(){
   app.send(submit);
 };
 
+
 $(document).ready(function(){
   app.init()
-  // Write SetInterval to run app.init every x seconds to check for new messages
+  setInterval(app.init, 10000);
 });
 
+// Allow users to 'befriend' other users by clicking on their username.
+//   On click
+//     Add the username to app.friends array.
+    
+//   In displayMessage, 
+//     if username is in app.friends array, then add class 'friend' to message text
+//     Add CSS to put message in bold
 
-// Allow users to send messages.
+// Left to do (worst-case time estimate):
+// 4. Add username, text, roomname to a message object and send message to server. (1 hour)
 
-// Display all messages sent by friends in bold
-  // apply 'friend' class on click
+// 5. Add friend: CSS so addFriend adds a friend class and displays messages from friends in bold. (1 hour)
 
-// Complete Backbone introduction repo.
+// 6. Finish Backbone intro (looks short). (20min)

@@ -82,3 +82,21 @@ form input[type=text] {
 .spinner img {
     padding: 10px;
 }
+
+.messageText{
+    background-color: lightblue;
+    margin-bottom: : 50px;
+}
+
+.username {
+    font-weight: bold;
+    margin-bottom: : 50px;
+}
+
+#roomSelect {
+    max-width: 200px;
+}
+
+.friend {
+    font-weight: bold;
+}
